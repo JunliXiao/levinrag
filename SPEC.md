@@ -49,7 +49,7 @@ The code's root namespace is `replware.levinrag` (renamed from `hybridrag` on 20
 
 ### 1.3 Non-goals
 
-PDF / Office / OCR parsing; multi-tenancy; SSO; query rewriting and agentic multi-turn retrieval; LLM-extracted entities for a knowledge graph; answer-level LLM-as-judge evaluation; horizontal scaling; streaming output (T5.4, deferred, see §21).
+PDF / Office / OCR parsing; multi-tenancy; SSO; query rewriting (except turning a follow-up question into a standalone query, §21) and agentic multi-turn retrieval; LLM-extracted entities for a knowledge graph; answer-level LLM-as-judge evaluation; horizontal scaling; streaming output (T5.4, deferred, see §21).
 
 ---
 
@@ -741,11 +741,13 @@ Items accumulated during development, with their background notes: see `docs/bac
 
 Grouped by nature. Before starting any of these, confirm the scope first (large items follow the process in §0 item 8), and update this section when done.
 
-**Priority** (user, 2026-09-26): these three come first; they are marked **priority** in the tables below.
+**Priority** (user, 2026-09-26, revised the same day): these three come first, in this order; they are marked **priority** in the tables below.
 
-1. A larger, harder eval corpus (§21.3): today every variant scores 1.0 on the sample corpus, so "measured, not asserted" shows nothing; it is also the prerequisite for the rerank threshold (§21.1) and for deciding on HyDE / doc2query.
-2. Scale (§21.1): the README states a ceiling of about 100k chunks that has not been measured (R6).
-3. T5.4 `/ask` SSE streaming (§21.2): an answer takes 10–30 s with nothing shown; needs the design doc for the citation-validation conflict first.
+1. **Follow-up questions in the web chat — next** (§21.3): after an answer, the user asks a follow-up in the same conversation ("那主管呢？") and it is understood in context. Needs the conversation's earlier turns and rewriting the follow-up into a standalone query before retrieval. Design doc first (§0 item 8).
+2. A larger, harder eval corpus (§21.3): today every variant scores 1.0 on the sample corpus, so "measured, not asserted" shows nothing; it is also the prerequisite for the rerank threshold (§21.1) and for deciding on HyDE / doc2query.
+3. Scale (§21.1): the README states a ceiling of about 100k chunks that has not been measured (R6).
+
+T5.4 SSE streaming is no longer a priority: what the user wanted from it was follow-ups (and, as a nice to have, LibreChat), and streaming provides neither by itself (2026-09-26).
 
 ### 21.1 Verify the initial success criteria (needs the user's environment)
 
@@ -760,7 +762,7 @@ Grouped by nature. Before starting any of these, confirm the scope first (large 
 
 | Item | Description |
 |---|---|
-| **T5.4 `/ask` SSE streaming** — **priority** | Conflicts with §10.2 citation validation: text already streamed out has been sent, so invalid citations cannot be removed afterwards. Three options: append a correction afterwards, delay rendering on the client, or buffer citations. Needs a design doc |
+| T5.4 `/ask` SSE streaming | Conflicts with §10.2 citation validation: text already streamed out has been sent, so invalid citations cannot be removed afterwards. Three options: append a correction afterwards, delay rendering on the client, or buffer citations. Needs a design doc. Not needed for follow-ups, but shortens the perceived wait, which rewriting the follow-up lengthens; an OpenAI-compatible endpoint (§21.3) needs streaming in OpenAI's format |
 | `/login` rate limiting or lockout | The user decided not to include it in Phase 5 |
 | Citation ranges `[1-3]` | Currently not supported by §10.2 |
 | Locking for concurrent ingest from multiple processes | Currently relies on a documented rule: do not run CLI ingest while the server is running |
@@ -772,7 +774,8 @@ Grouped by nature. Before starting any of these, confirm the scope first (large 
 | Item | Trigger or prerequisite |
 |---|---|
 | HyDE / doc2query | If real questions are abstract like those for the book corpus and scores are low (analysis in `docs/backlog.md`) |
-| Conversation history and multi-turn follow-ups | Must be done together with query rewriting (currently a non-goal in §1.3) |
+| **Multi-turn follow-ups in the web chat** — **priority, next** | Decided: do it (user, 2026-09-26). On the existing web UI; must be done together with rewriting the follow-up into a standalone query (§1.3 makes this one exception to the query-rewriting non-goal) |
+| OpenAI-compatible `/v1/chat/completions`, to plug into LibreChat | Nice to have (user, 2026-09-26). Each LibreChat user must call with their own API token, or everyone shares one principal and the ACL collapses; needs streaming in OpenAI's chunk format; reuses the follow-up rewriting |
 | Keycloak SSO (OIDC) | A production launch requirement; the D9 interface is already in place |
 | **A larger, harder eval corpus** — **priority** | To make variant comparison and threshold calibration meaningful (§15.2 limitation). Decided: do it (user, 2026-09-26) |
 

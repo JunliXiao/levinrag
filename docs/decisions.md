@@ -1403,3 +1403,23 @@ memory 12.2 GB → 9.8 GB. Switched.
 - LM Studio stays documented as an alternative (VLLM_SETUP.md "Using LM
   Studio instead"), not managed by the tasks. Its downloaded models were
   not deleted (user decides).
+
+## 2026-09-26 — Follow-ups replace SSE streaming as the next feature
+
+Original spec: T5.4 `/ask` SSE streaming was the third priority of §21.
+Actual need: asked about the citation-validation conflict, the user
+clarified that what they wanted from "SSE" was (1) follow-up questions in
+the existing web chat and (2), as a nice to have, plugging LevinRAG into
+LibreChat. Streaming gives neither: follow-ups need the conversation's
+earlier turns plus rewriting the follow-up into a standalone query, and
+LibreChat talks to OpenAI-compatible `/v1/chat/completions`, not to
+`/api/v1/ask`.
+
+Approach (user decision): multi-turn follow-ups on the web UI are the next
+feature (SPEC §21 priority 1, promoted from §21.3); §1.3 now excludes this
+one kind of query rewriting from the non-goal. T5.4 stays in §21.2 without
+priority. An OpenAI-compatible endpoint is listed in §21.3 as a nice to
+have; each LibreChat user would have to call with their own token, since a
+shared token makes every user one principal. (`docs/backlog.md` rejected
+LibreChat as the end-user UI because of its weight; using it as a client
+of an endpoint is a different question.)
