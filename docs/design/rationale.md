@@ -80,6 +80,18 @@ It is not Datomic and has no history queries; its graph capabilities are not the
 - **Poor fit**: chunk counts on the order of a hundred million, large-scale vector search at high QPS, horizontal scaling. These cases are better served by dedicated retrieval infrastructure.
 - **Other costs**: dependence on a database whose maintenance is concentrated in few maintainers (isolated behind the Retriever interface, and the index can be rebuilt); less breadth of features than general-purpose frameworks: no agents, no multi-turn conversation, no streaming.
 
+## Compared with a permission-aware platform
+
+The closest existing systems are permission-aware enterprise search platforms such as Onyx (formerly Danswer). They share LevinRAG's features: cited answers, hybrid retrieval, permissions enforced in retrieval. But they solve a different problem:
+
+| | Permission-aware platform (e.g. Onyx) | LevinRAG |
+|---|---|---|
+| Documents | Fetched from many SaaS tools through connectors | One directory you control |
+| Permissions | Synced from each source system | Declared in the corpus, computed at ingest |
+| Deployment | A set of services | One process, plus three model endpoints |
+
+The platform's extra weight buys connectors and permissions that follow the source. When documents live in many SaaS tools, that is the better fit. LevinRAG gives both up so that the whole system, including its permission invariant, can be verified in one process.
+
 ## Open questions
 
 LevinRAG does not claim to have invented a new RAG algorithm, nor does it claim that Datalevin is the best choice. It sets out to test two things:
