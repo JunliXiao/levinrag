@@ -76,7 +76,7 @@ It is not Datomic and has no history queries; its graph capabilities are not the
 
 ## Scope and costs
 
-- **Good fit**: internal enterprise knowledge bases with up to a few thousand documents (about 100,000 chunks), moderate query volume, and a need for strict permissions and auditability.
+- **Good fit**: internal enterprise knowledge bases with up to a few thousand documents (about 100,000 chunks), moderate query volume, and a need for strict permissions and auditability. This size is the design target, not a measured ceiling: it has not yet been verified end to end (see [SPEC.md §21](../../SPEC.md#21-remaining-work-and-next-steps)).
 - **Poor fit**: chunk counts on the order of a hundred million, large-scale vector search at high QPS, horizontal scaling. These cases are better served by dedicated retrieval infrastructure.
 - **Other costs**: dependence on a database whose maintenance is concentrated in few maintainers (isolated behind the Retriever interface, and the index can be rebuilt); less breadth of features than general-purpose frameworks: no agents, no multi-turn conversation, no streaming.
 

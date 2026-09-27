@@ -4,7 +4,7 @@ English | [繁體中文](README.zh-TW.md)
 
 **A permission-aware RAG server you can verify.**
 
-Cited answers over a directory of Markdown, for internal knowledge bases of up to a few thousand documents. One JVM process, one embedded database, no services to assemble.
+Cited answers over a directory of Markdown, for internal knowledge bases. One JVM process, one embedded database, no services to assemble.
 
 ## Highlights
 
@@ -47,7 +47,7 @@ flowchart LR
 
 These claims do not depend on Datalevin; most of them would still hold with PostgreSQL plus pgvector. Datalevin was chosen because it puts full-text, vectors and Datalog in one embedded engine, with no separate service to run, and its schema can evolve step by step.
 
-The costs are just as clear: a scale ceiling of about 100,000 chunks, no horizontal scaling; dependence on a database with a concentrated set of maintainers; less feature breadth than general-purpose frameworks. Within this scale, simplicity and verifiability are worth more than maximum throughput.
+The costs are just as clear: it is designed for about 100,000 chunks (a few thousand documents), and the actual ceiling has not been measured yet; no horizontal scaling; dependence on a database with a concentrated set of maintainers; less feature breadth than general-purpose frameworks. Within the scale it is designed for, simplicity and verifiability are worth more than maximum throughput.
 
 The full argument (comparison with the frameworks, why Datalevin, scope of applicability, open questions) is in [docs/design/rationale.md](docs/design/rationale.md).
 

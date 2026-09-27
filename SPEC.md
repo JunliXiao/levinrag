@@ -745,7 +745,7 @@ Grouped by nature. Before starting any of these, confirm the scope first (large 
 
 1. **Follow-up questions in the web chat — next** (§21.3): after an answer, the user asks a follow-up in the same conversation ("那主管呢？") and it is understood in context. Needs the conversation's earlier turns and rewriting the follow-up into a standalone query before retrieval. Design doc first (§0 item 8).
 2. A larger, harder eval corpus (§21.3): today every variant scores 1.0 on the sample corpus, so "measured, not asserted" shows nothing; it is also the prerequisite for the rerank threshold (§21.1) and for deciding on HyDE / doc2query.
-3. Scale (§21.1): the README states a ceiling of about 100k chunks that has not been measured (R6).
+3. Scale (§21.1): the design target of about 100k chunks stated in the README and the design rationale has not been measured (R6).
 
 T5.4 SSE streaming is no longer a priority: what the user wanted from it was follow-ups (and, as a nice to have, LibreChat), and streaming provides neither by itself (2026-09-26).
 
