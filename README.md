@@ -2,9 +2,20 @@
 
 English | [繁體中文](README.zh-TW.md)
 
-> The web UI is currently in Traditional Chinese (UI localization is on the backlog).
+**A permission-aware RAG server you can verify.**
 
-An enterprise RAG MVP in a single JVM with embedded Datalevin: Markdown / plain-text corpus → multi-channel recall (lexical + semantic + link graph) → RRF fusion → cross-encoder rerank → context expansion → an answer with `[n]` citations. Built-in ACL, a per-query trace and an evaluation framework. All models (embedding, rerank, chat) are called through OpenAI-compatible APIs.
+Cited answers over a directory of Markdown, for internal knowledge bases of up to a few thousand documents. One JVM process, one embedded database, no services to assemble.
+
+## Highlights
+
+- **Permissions are part of retrieval**: every document × unauthorized-user pair is tested; mistakes fail closed.
+- **Explainable**: every candidate's rank and score at every stage, in a Debug panel.
+- **Rebuildable**: the index is derived data; `bb reindex` rebuilds it from your documents.
+- **Chinese out of the box**: a dictionary-free bigram analyzer, compared with HanLP ([spike](docs/spikes/cjk-analyzer.md)); Traditional Chinese web UI.
+- **Verifiable by an AI coding agent**: one repo, one process, tests with stub models, and a [quick start](docs/howto/quick-start.md) an agent can run step by step.
+- **Measured**: `bb eval` reports recall@k and MRR@10 on your own questions.
+
+Pipeline: lexical + semantic + link-graph recall → RRF fusion → cross-encoder rerank → context expansion → answer with `[n]` citations. Models are called through OpenAI-compatible APIs (vLLM on a GPU, or llama.cpp on a laptop).
 
 ## Design rationale
 

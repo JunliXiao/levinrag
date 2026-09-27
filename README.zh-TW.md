@@ -4,7 +4,20 @@
 
 > 本文為英文版的翻譯；內容不一致時，以英文版為準。
 
-單一 JVM、嵌入式 Datalevin 的企業 RAG MVP：Markdown／純文字語料 → 詞彙＋語意＋連結圖多路召回 → RRF 融合 → cross-encoder rerank → 脈絡擴展 → 帶引用 `[n]` 的回答。內建 ACL、每次查詢的 trace 與評估框架。模型（embedding、rerank、chat）一律透過 OpenAI 相容 API 呼叫。
+**可驗證的權限感知 RAG 伺服器。**
+
+針對一個 Markdown 資料夾，給出帶引用的回答；適用於最多數千份文件的內部知識庫。一個 JVM process、一個嵌入式資料庫，不需要拼接任何服務。
+
+## 特色
+
+- **權限是檢索的一部分**：每一組「文件 × 無權限使用者」都有測試；設定寫錯時 fail closed。
+- **可解釋**：每個候選在每個階段的名次與分數，都顯示在 Debug 面板。
+- **可重建**：索引只是衍生資料；`bb reindex` 從原始文件重建。
+- **開箱即用的中文檢索**：不需詞典的 bigram 斷詞，已與 HanLP 比較（[spike](docs/spikes/cjk-analyzer.md)）；網頁介面為繁體中文。
+- **AI coding agent 可驗證**：一個 repo、一個 process，測試使用 stub 模型，[快速上手](docs/howto/quick-start.zh-TW.md)可由 agent 逐步執行。
+- **有量測**：`bb eval` 在你自己的題目上輸出 recall@k 與 MRR@10。
+
+流程：詞彙＋語意＋連結圖多路召回 → RRF 融合 → cross-encoder rerank → 脈絡擴展 → 帶 `[n]` 引用的回答。模型透過 OpenAI 相容 API 呼叫（GPU 上的 vLLM，或筆電上的 llama.cpp）。
 
 ## 設計理念
 
