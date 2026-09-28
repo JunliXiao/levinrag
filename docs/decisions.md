@@ -1436,5 +1436,6 @@ onto them. 1.0 is a compatibility promise, reached when every README claim
 is backed by evidence and someone other than the author has used LevinRAG
 on a real corpus. The promise covers `/api/v1`, the corpus and permission
 format, environment variables and `bb` commands, not the index, which is
-derived data. The plan and criteria live in README "Status and roadmap".
+derived data. The plan and criteria live in `ROADMAP.md` (English only); both READMEs
+keep a one-line status and link to it.
 Whether SSO is required for 1.0 is still open.

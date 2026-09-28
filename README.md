@@ -17,28 +17,7 @@ Cited answers over a directory of Markdown, for internal knowledge bases. One JV
 
 Pipeline: lexical + semantic + link-graph recall → RRF fusion → cross-encoder rerank → context expansion → answer with `[n]` citations. Models are called through OpenAI-compatible APIs (vLLM on a GPU, or llama.cpp on a laptop).
 
-## Status and roadmap
-
-**0.x, early preview.** Not yet deployed in production; the ~100k-chunk design target and the latency goal are unmeasured. The HTTP API, corpus format, configuration and `bb` commands may still change between 0.x releases. Changes are listed in [CHANGELOG.md](CHANGELOG.md).
-
-Planned releases:
-
-| Version | Content |
-|---|---|
-| 0.1.0 | Phases 0–5 of the initial spec: the current feature set |
-| 0.2.0 | Follow-up questions in the web chat |
-| 0.3.0 | A larger, harder eval corpus; rerank threshold calibration |
-| 0.4.0 | Scale measured near 100k chunks; one real deployment |
-| 1.0 | All of the criteria below are met |
-
-1.0 means every claim in this README is backed by evidence, and the HTTP API (`/api/v1`), the corpus and permission format, the environment variables and the `bb` commands stop changing incompatibly. The index is not part of that promise: it is derived data, and an upgrade may require `bb reindex`. Criteria:
-
-- someone other than the author has run the [quick start](docs/howto/quick-start.md) on their own corpus without help, and used LevinRAG on a real corpus for a while;
-- one production deployment has been done;
-- the ~100k-chunk target has been measured;
-- `bb eval` distinguishes better variants from worse ones.
-
-Details of the remaining work are in [SPEC.md §21](SPEC.md#21-remaining-work-and-next-steps).
+**Status: 0.x, early preview.** Not yet deployed in production; the design targets for scale and latency are unmeasured. Planned releases and the criteria for 1.0: [ROADMAP.md](ROADMAP.md); changes: [CHANGELOG.md](CHANGELOG.md).
 
 ## Design rationale
 

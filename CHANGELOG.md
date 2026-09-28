@@ -3,7 +3,7 @@
 All notable changes to LevinRAG are listed here. Versions follow
 [Semantic Versioning](https://semver.org/); while the version is 0.x, any
 release may change the HTTP API, corpus format, configuration or `bb`
-commands. The planned releases are in the README, "Status and roadmap".
+commands. The planned releases are in [ROADMAP.md](ROADMAP.md).
 
 ## [Unreleased]
 
