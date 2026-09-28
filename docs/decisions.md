@@ -1423,3 +1423,18 @@ have; each LibreChat user would have to call with their own token, since a
 shared token makes every user one principal. (`docs/backlog.md` rejected
 LibreChat as the end-user UI because of its weight; using it as a client
 of an endpoint is a different question.)
+
+## 2026-09-28 — Version numbers, a changelog and a release plan
+
+Before: no version, no tags; the repo was pushed to GitHub and shared with
+a few people for early feedback.
+Decision (user): tag the current `main` as `v0.1.0` and keep
+`CHANGELOG.md` (English only, like this log). Planned releases: 0.2.0
+follow-ups, 0.3.0 a harder eval corpus and rerank threshold calibration,
+0.4.0 scale measurement and one real deployment; SPEC §21's priorities map
+onto them. 1.0 is a compatibility promise, reached when every README claim
+is backed by evidence and someone other than the author has used LevinRAG
+on a real corpus. The promise covers `/api/v1`, the corpus and permission
+format, environment variables and `bb` commands, not the index, which is
+derived data. The plan and criteria live in README "Status and roadmap".
+Whether SSO is required for 1.0 is still open.

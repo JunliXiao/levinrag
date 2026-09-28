@@ -747,6 +747,8 @@ Grouped by nature. Before starting any of these, confirm the scope first (large 
 2. A larger, harder eval corpus (§21.3): today every variant scores 1.0 on the sample corpus, so "measured, not asserted" shows nothing; it is also the prerequisite for the rerank threshold (§21.1) and for deciding on HyDE / doc2query.
 3. Scale (§21.1): the design target of about 100k chunks stated in the README and the design rationale has not been measured (R6).
 
+These priorities are also the planned releases 0.2.0, 0.3.0 and 0.4.0; the release plan and the criteria for 1.0 are in the README, "Status and roadmap" (2026-09-28).
+
 T5.4 SSE streaming is no longer a priority: what the user wanted from it was follow-ups (and, as a nice to have, LibreChat), and streaming provides neither by itself (2026-09-26).
 
 ### 21.1 Verify the initial success criteria (needs the user's environment)
