@@ -74,6 +74,7 @@ bb doctor
 預期（路徑與數量依你的環境而定）：
 
 ```text
+LevinRAG 版本：v0.1.0
 [OK]   java：Java 21
 [OK]   clojure：已安裝 Clojure CLI
 [OK]   css：網頁樣式尚未建置，bb serve 會自動建置
@@ -91,7 +92,7 @@ bb doctor
 [OK]   chat
 ```
 
-`[FAIL]` 的下一行以 `→` 開頭，就是修正方法。`[FAIL] rerank-long` 表示 reranker 的 context 太小，放不下一整個 chunk；見 [VLLM_SETUP.zh-TW.md](../../VLLM_SETUP.zh-TW.md)。
+第一行是 LevinRAG 的版本（`git describe`：像 `v0.1.0` 這樣的 tag；tag 之後有新 commit 時接 `-<之後的 commit 數>-g<commit>`，有本地修改時再加 `-dirty`）。`[FAIL]` 的下一行以 `→` 開頭，就是修正方法。`[FAIL] rerank-long` 表示 reranker 的 context 太小，放不下一整個 chunk；見 [VLLM_SETUP.zh-TW.md](../../VLLM_SETUP.zh-TW.md)。
 
 ## 5. 匯入
 
@@ -258,4 +259,4 @@ rerank 失敗時，候選維持 RRF 順序，也不套用分數門檻。沒有�
 
 ## 回報結果
 
-值得回傳的：eval 結果檔與印出的表格、`bb acl:report` 的輸出、`git rev-parse --short HEAD`、模型名稱與執行的地方（GPU 或筆電），以及本文任何和你實際看到的不一致之處。請不要傳語料本身。
+值得回傳的：eval 結果檔與印出的表格、`bb acl:report` 的輸出、`bb doctor` 的版本那一行、模型名稱與執行的地方（GPU 或筆電），以及本文任何和你實際看到的不一致之處。請不要傳語料本身。

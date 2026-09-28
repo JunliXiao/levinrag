@@ -28,6 +28,8 @@ First tagged version: Phases 0–5 of the initial spec
   model timeouts.
 - Models through OpenAI-compatible APIs (vLLM, or llama.cpp on a laptop);
   tests run with stub models.
+- `bb doctor` checks a fresh checkout; its first line is the LevinRAG
+  version (`git describe`), to paste into bug reports.
 
 Known limits: not yet deployed in production; the ~100k-chunk target and
 the latency goal are unmeasured; single-turn questions only; no SSO.

@@ -164,3 +164,13 @@
         (let [[f] (walker/walk-corpus dir nil ["all"] nil)]
           (is (= (boolean (:acl-error f)) (boolean (doctor/collection-file-problem n text)))
               (str n " " text)))))))
+
+(deftest test-version
+  (testing "the version line shows git describe, or says it is unknown"
+    (is (= "LevinRAG 版本：v0.1.0-3-g72c5505-dirty" (doctor/version-line "v0.1.0-3-g72c5505-dirty\n")))
+    (is (= "LevinRAG 版本：不明（不是 git checkout）" (doctor/version-line nil))))
+  (testing "git describe: something in this checkout, nil outside any checkout"
+    (is (not (str/blank? (doctor/git-describe "."))))
+    (let [dir (tmp/dir "doctor-nogit")]
+      (try (is (nil? (doctor/git-describe dir)))
+           (finally (tmp/delete-tree! dir))))))

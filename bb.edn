@@ -89,6 +89,7 @@
                       results (concat (when env-err [{:level :fail :item ".env" :msg env-err}])
                                       (doctor/run-checks (merge file-env (into {} (System/getenv)))
                                                          (.isFile (java.io.File. ".env"))))]
+                  (println (doctor/version-line (doctor/git-describe ".")))
                   (println (doctor/report results))
                   (if (doctor/failed? results)
                     (do (println "\n有 [FAIL] 項目：修正後再執行 bb doctor（模型端點尚未檢查）。")

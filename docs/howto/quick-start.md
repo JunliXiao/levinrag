@@ -75,6 +75,7 @@ bb doctor
 Expected (paths and counts are yours):
 
 ```text
+LevinRAG 版本：v0.1.0
 [OK]   java：Java 21
 [OK]   clojure：已安裝 Clojure CLI
 [OK]   css：網頁樣式尚未建置，bb serve 會自動建置
@@ -92,7 +93,7 @@ Expected (paths and counts are yours):
 [OK]   chat
 ```
 
-A `[FAIL]` line is followed by `→` and the fix. `[FAIL] rerank-long` means the reranker's context is too small for a full chunk; see [VLLM_SETUP.md](../../VLLM_SETUP.md).
+The first line is the LevinRAG version (`git describe`: a tag such as `v0.1.0`, plus `-<commits since>-g<commit>` after it and `-dirty` with local changes). A `[FAIL]` line is followed by `→` and the fix. `[FAIL] rerank-long` means the reranker's context is too small for a full chunk; see [VLLM_SETUP.md](../../VLLM_SETUP.md).
 
 ## 5. Ingest
 
@@ -259,4 +260,4 @@ Each variant is the pipeline in [8.3](#83-explainable-why-this-passage) with som
 
 ## Reporting back
 
-Useful to send: the eval results files and the printed tables, the `bb acl:report` output, `git rev-parse --short HEAD`, the model names and where they ran (GPU or laptop), and anything in this guide that did not match what you saw. Do not send the corpus itself.
+Useful to send: the eval results files and the printed tables, the `bb acl:report` output, the version line from `bb doctor`, the model names and where they ran (GPU or laptop), and anything in this guide that did not match what you saw. Do not send the corpus itself.

@@ -166,6 +166,14 @@
                           "語料根目錄沒有 _collection.edn，ROOT_READ_GROUPS 也沒設：沒有另外設定權限的文件只有 admin 讀得到"
                           "在 .env 設 ROOT_READ_GROUPS=all，或在語料根目錄放 _collection.edn：{:read-groups [\"all\"]}")))))
 
+;; --- version ---
+
+(defn version-line
+  "The first line of the report: `describe` is `git describe --tags --dirty
+   --always` output (e.g. v0.1.0-3-g72c5505-dirty), nil outside a git checkout."
+  [describe]
+  (str "LevinRAG 版本：" (if (str/blank? describe) "不明（不是 git checkout）" (str/trim describe))))
+
 ;; --- output ---
 
 (defn report [results]
@@ -186,6 +194,15 @@
 (defn- java-version []
   (when (on-path? "java")
     (try (:err (sh/sh "java" "-version")) (catch Exception _ nil))))
+
+(defn git-describe
+  "`git describe --tags --dirty --always` in `dir`, or nil when git is missing
+   or `dir` is not in a git checkout."
+  [dir]
+  (when (on-path? "git")
+    (try (let [{:keys [exit out]} (sh/sh "git" "describe" "--tags" "--dirty" "--always" :dir (str dir))]
+           (when (zero? exit) (str/trim out)))
+         (catch Exception _ nil))))
 
 (defn run-checks
   "All checks for `env` (the shell environment with `.env` under it)."
