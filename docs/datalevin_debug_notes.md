@@ -224,8 +224,10 @@ digraph datalevin_debug {
 
 > **2026-09-22 修正**：下方原本寫的 `?qvec ?dims` 兩參數形式是錯的 ——
 > `vec-neighbors` 沒有「dimensions」這個 positional 參數。已對照
-> `datalevin.core/vec-neighbors` 的 docstring 與 `datalevin/built_ins.clj`
-> 原始碼、並在全新 JVM process 中實際跑過查詢，確認正確語法如下。
+> `datalevin.core/vec-neighbors` 的 docstring 與 datalevin 1.1.0 jar 內的
+> `datalevin/built_ins.clj` 原始碼、並在全新 JVM process 中實際跑過查詢，
+> 確認正確語法如下。原始碼不在本專案內，要看可從 jar 解出：
+> `unzip -p ~/.m2/repository/datalevin/datalevin/1.1.0/datalevin-1.1.0.jar datalevin/built_ins.clj`
 
 已驗證可用的格式（attribute-keyword 形式，回傳 `[e a v]` 三元組，
 或加 `:display :refs+dists` 時回傳 `[e a v dist]`）：

@@ -1439,3 +1439,15 @@ format, environment variables and `bb` commands, not the index, which is
 derived data. The plan and criteria live in `ROADMAP.md` (English only); both READMEs
 keep a one-line status and link to it.
 Whether SSO is required for 1.0 is still open.
+
+## 2026-10-01 — Removed the stray copy of Datalevin source
+
+Before: `datalevin/` at the repo root held `core.clj`, `built_ins.clj` and
+`query/access/vector.clj`, committed in `f720091` (T1.1) without mention.
+They are byte-identical to the files in the datalevin 1.1.0 jar and are
+not on the classpath (`:paths` is `src` and `resources`), so they changed
+nothing; they were most likely extracted while checking `vec-neighbors`
+syntax (`docs/datalevin_debug_notes.md`) and committed by accident.
+Decision: delete them. Reason: they have no effect on the build, and a
+repo-root `datalevin/` suggests LevinRAG forks or patches Datalevin, which
+it does not. The source is in the jar and at the upstream 1.1.0 tag.
