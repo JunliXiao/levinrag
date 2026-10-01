@@ -7,6 +7,15 @@ commands. The planned releases are in [ROADMAP.md](ROADMAP.md).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-01
+
+- License changed from AGPL-3.0 to Apache-2.0; copyright REPLWARE.
+  0.1.0 remains available under the AGPL-3.0. A `NOTICE` file is added
+  and both READMEs gain a License section.
+- Quick start: the real clone URL in step 1; `bb dev:models` now points
+  to `bb doctor` (evaluators) as well as `bb dev:up` (developers);
+  `data-rebuild/` from step 8.2 is ignored by git.
+
 ## [0.1.0] - 2026-09-28
 
 First tagged version: Phases 0–5 of the initial spec
@@ -34,5 +43,6 @@ First tagged version: Phases 0–5 of the initial spec
 Known limits: not yet deployed in production; the ~100k-chunk target and
 the latency goal are unmeasured; single-turn questions only; no SSO.
 
-[Unreleased]: https://github.com/humorless/levinrag/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/humorless/levinrag/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/humorless/levinrag/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/humorless/levinrag/releases/tag/v0.1.0

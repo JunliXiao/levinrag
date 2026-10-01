@@ -70,3 +70,9 @@ The full argument (comparison with the frameworks, why Datalevin, scope of appli
 - [docs/decisions.md](docs/decisions.md): the reason for every design change.
 - [docs/design/rationale.md](docs/design/rationale.md): the full design argument.
 - [docs/design/2026-09-22-initial-spec.md](docs/design/2026-09-22-initial-spec.md): the initial spec (Chinese, frozen).
+
+## License
+
+[Apache License 2.0](LICENSE). Copyright 2026 REPLWARE. Versions up to and including 0.1.0 were released under the AGPL-3.0.
+
+LevinRAG is developed and maintained by [REPLWARE](https://replware.dev), a Taipei consultancy that builds self-hosted data platforms.

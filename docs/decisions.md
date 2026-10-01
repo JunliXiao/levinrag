@@ -1451,3 +1451,19 @@ syntax (`docs/datalevin_debug_notes.md`) and committed by accident.
 Decision: delete them. Reason: they have no effect on the build, and a
 repo-root `datalevin/` suggests LevinRAG forks or patches Datalevin, which
 it does not. The source is in the jar and at the upstream 1.1.0 tag.
+
+## 2026-10-01 — License changed from AGPL-3.0 to Apache-2.0
+
+Before: AGPL-3.0, no copyright holder named; the READMEs did not mention
+a license.
+Decision (user): Apache-2.0 from 0.1.1, copyright REPLWARE, with a
+`NOTICE` file and a License section in both READMEs that names REPLWARE
+as developer and maintainer. 0.1.0 stays under the AGPL-3.0.
+Reason: LevinRAG is meant to run inside companies, and many company
+policies forbid AGPL software, which stops the early evaluations the 0.x
+releases depend on (ROADMAP: someone other than the author on a real
+corpus). Apache-2.0 also grants patents explicitly. Every commit is by one
+author, so no other contributor had to agree; all dependencies (EPL, MIT,
+Apache) are compatible. The cost: others may build closed or hosted
+derivatives without sharing changes. The READMEs do not offer deployment
+services yet; that waits until one real deployment has been done.

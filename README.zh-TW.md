@@ -72,3 +72,9 @@ flowchart LR
 - [docs/decisions.md](docs/decisions.md)：每一處設計調整的理由（英文）。
 - [docs/design/rationale.zh-TW.md](docs/design/rationale.zh-TW.md)：完整的設計論證。
 - [docs/design/2026-09-22-initial-spec.md](docs/design/2026-09-22-initial-spec.md)：初版規格（凍結）。
+
+## 授權
+
+[Apache License 2.0](LICENSE)。Copyright 2026 REPLWARE。0.1.0 以前（含）的版本以 AGPL-3.0 發布。
+
+LevinRAG 由 [睿博資訊 REPLWARE](https://replware.dev) 開發與維護，這是一家位於台北、協助企業建置自主部署資料平台的顧問公司。
