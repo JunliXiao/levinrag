@@ -290,3 +290,33 @@ kept in line by hand, twice (two languages). Candidates, cheapest first:
   `bb doctor` lines, the eval table header): golden tests on the
   formatting functions, or a check that runs them on the sample corpus
   and compares the line shapes (numbers masked).
+
+## Distribution: Docker image, not a downloadable jar (2026-10-01)
+
+Discussed after the v0.1.1 quick-start run; target 0.4.0 (one real
+deployment, ROADMAP.md). Quick start stays source-based: the models run on
+the host anyway (no Metal GPU in Docker on a Mac), `mise install` already
+installs the toolchain, and checking the claims needs the source (`bb
+doctor`, the test suite in quick start 8.1). A standalone jar for download
+saves little over that; the Docker image already bundles Java 21 and the
+`--add-opens` flags, so it is the distribution form for deployments.
+
+- **Subcommand dispatch in `core/-main`.** `levinrag ingest`, `levinrag
+  user:create alice --groups hr`, `levinrag serve`, … with the same names as
+  the `bb` tasks, so docs map one to one. Replaces the
+  `java --add-opens=… -cp standalone.jar clojure.main -m <ns>` lines in
+  `ops.md`. Needs `.env` reading in the JVM (move `bb/…/dotenv.clj` to
+  `src/` or make it `.cljc`), the version baked in at build time (no git
+  for `git describe` in the image), and the `doctor` corpus and permission
+  checks moved to `src/` so they run there too. `dev:*` and build tasks
+  stay bb-only. If a jar is ever run directly, `Add-Opens:` in its manifest
+  removes the flags (whether slim can write it is unchecked).
+- **Publish the image on tag** to `ghcr.io/humorless/levinrag` (today it
+  is only pushed by the manual Kamal deploy, which has never run).
+- **Local profile for the image.** It always runs `:prod`: port 80 and
+  `Secure` cookies, assuming Kamal's HTTPS proxy. Make port and secure
+  cookies switchable by environment variables for a plain `docker run`
+  over HTTP (Safari or a LAN IP may refuse the cookie; unverified).
+- **`compose.yaml` with vLLM** for a Linux GPU server: three vLLM
+  containers plus LevinRAG, corpus and `DATA_DIR` as volumes, settings
+  from `.env`; the whole stack with `docker compose up`.
