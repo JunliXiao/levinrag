@@ -103,7 +103,8 @@
           ;; one at a time, embed → chat → rerank: on a 16 GB Mac loading
           ;; them all at once can run out of memory
           (run! llama-up! plan)
-          (println "模型都已就緒。下一步：bb dev:up")
+          ;; evaluators (quick start) go on with bb doctor, developers with bb dev:up
+          (println "模型都已就緒。下一步：bb doctor 檢查設定（開發時改用 bb dev:up）")
           true))))
 
 ;; --- dev:up / dev:down ---

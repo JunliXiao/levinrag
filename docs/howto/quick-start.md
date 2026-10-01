@@ -25,7 +25,7 @@ The command output and the web UI are in Traditional Chinese; the English glosse
 ## 1. Install the tools
 
 ```bash
-git clone <repository URL> levinrag
+git clone https://github.com/humorless/levinrag.git
 cd levinrag
 mise trust && mise install
 ```

@@ -30,6 +30,8 @@ resources/public/css/output.*
 resources-hashed/
 data/
 data-test/
+# quick start step 8.2 builds a second index here
+data-rebuild/
 
 # eval run outputs
 /eval/results/

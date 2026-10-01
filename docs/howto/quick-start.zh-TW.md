@@ -24,7 +24,7 @@
 ## 1. 安裝工具
 
 ```bash
-git clone <repository URL> levinrag
+git clone https://github.com/humorless/levinrag.git
 cd levinrag
 mise trust && mise install
 ```
