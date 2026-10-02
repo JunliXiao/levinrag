@@ -84,7 +84,22 @@
 
 (def ^:private not-found-re #"找不到|查無|沒有相關|(?i)not found|no relevant|cannot find")
 
-(defn- content [resp] ... ) ;; 保持原樣
+(defn- content
+  "The reply text. A null content (reasoning servers return it when
+   thinking used up max_tokens) is an empty reply; a response without a
+   message (e.g. HTTP 200 with an error payload) is a chat dependency
+   failure."
+  [resp]
+  (let [msg (get-in resp [:choices 0 :message])
+        c (:content msg)]
+    (cond
+      (string? c) c
+      (and (map? msg) (nil? c)) ""
+      :else
+      (throw (ex-info "chat response missing choices[0].message.content"
+                      {:llm/endpoint :chat
+                       :http/status 200
+                       :llm/body-excerpt (let [s (pr-str resp)] (subs s 0 (min 500 (count s))))})))))
 
 (defn ask!
   "Search as `principal`, then answer. If passages exist, perform citation RAG;
