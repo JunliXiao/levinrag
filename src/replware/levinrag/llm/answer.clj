@@ -24,11 +24,49 @@
     (slurp res)
     "你是 AI 助理。請運用自身知識解答使用者的問題。"))
 
-(defn strip-think [s] ... ) ;; 保持原樣
+(defn strip-think
+  "Remove <think>…</think> blocks; an unclosed <think> drops the rest; a
+   leftover </think> with no opening tag (templates that pre-fill
+   <think>) drops everything before it."
+  [s]
+  (-> s
+      (str/replace #"(?s)<think>.*?</think>" "")
+      (str/replace #"(?s)<think>.*\z" "")
+      (str/replace #"(?s)\A.*?</think>" "")
+      str/trim))
 
-(defn parse-citations [s n] ... ) ;; 保持原樣
+(def ^:private citation-re
+  ;; [1] [1, 3] ［1］ 【1】 ［１］, but not a Markdown link text [..](..)
+  ;; \x28 is an open paren, spelled out so the pre-commit hook's raw
+  ;; bracket count stays even; (?U) lets \d match full-width digits
+  #"(?U)[\[［【]\s*(\d+(?:\s*[,，、]\s*\d+)*)\s*[\]］】](?!\x28)")
 
-(defn- neutralize [s] ... ) ;; 保持原樣
+(defn- numbers
+  "Integers in a citation group (full-width digits are NFKC-normalized);
+   one too long for a long counts as 0 (invalid)."
+  [group]
+  (mapv #(or (parse-long (java.text.Normalizer/normalize % java.text.Normalizer$Form/NFKC)) 0)
+        (re-seq #"(?U)\d+" group)))
+
+(defn parse-citations
+  "Citations in `s` given `n` passages. Returns {:text :cited :invalid}:
+   :text has every citation rewritten as [n] and out-of-range ones
+   removed; :cited and :invalid are distinct, ascending."
+  [s n]
+  (let [valid? #(<= 1 % n)
+        found (mapcat (comp numbers second) (re-seq citation-re s))]
+    {:text (str/replace s citation-re
+                        (fn [[_ group]] (apply str (map #(str "[" % "]") (filter valid? (numbers group))))))
+     :cited (vec (sort (distinct (filter valid? found))))
+     :invalid (vec (sort (distinct (remove valid? found))))}))
+
+(defn- neutralize
+  "Document text with <sources>/</sources> (any case, whitespace inside
+   the tag) turned into full-width brackets, so a document cannot close
+   the sources block and address the model as the user (indirect prompt
+   injection)."
+  [s]
+  (str/replace (str s) #"(?i)<(\s*/?\s*sources\s*)>" "＜$1＞"))
 
 (defn messages
   "Chat messages builder handling both RAG and direct chat modes."
