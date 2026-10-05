@@ -6,8 +6,8 @@
             [replware.levinrag.retrieval.pipeline :as pipeline]))
 
 (def default-opts
-  {:temperature 0.2
-   :max-tokens 1024
+  {:temperature 0.7
+   :max-tokens 4096
    :extra-body nil})
 
 (def empty-answer-message "模型沒有產生回答，請稍後再試。")
