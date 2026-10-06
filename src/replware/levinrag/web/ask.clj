@@ -9,7 +9,10 @@
             [replware.levinrag.api.ask :as api-ask]
             [replware.levinrag.trace :as trace]
             [replware.levinrag.web.layout :as layout]
-            [ring.util.codec :as codec]))
+            [ring.util.codec :as codec])
+  (:import [org.commonmark.ext.gfm.tables TablesExtension]
+           [org.commonmark.parser Parser]
+           [org.commonmark.renderer.html HtmlRenderer]))
 
 (def ^:private max-query 3000)
 
@@ -65,6 +68,28 @@
         ;; a seq, not a vector: hiccup would read a vector whose first
         ;; element is a string as a tag named by that (model) text
         [:div {:class ["whitespace-pre-line" "leading-relaxed"]} (seq (conj out (subs text pos)))]))))
+
+(def ^:private md-parser
+  (-> (Parser/builder)
+      (.extensions [(TablesExtension/create)])
+      .build))
+
+(def ^:private md-renderer
+  (-> (HtmlRenderer/builder)
+      (.extensions [(TablesExtension/create)])
+      (.escapeHtml true)
+      (.sanitizeUrls true)
+      .build))
+
+(defn- answer-view-md
+  "Answer text rendered as Markdown with each [n] turned into a link to source n."
+  [text]
+  (let [html-raw (.render md-renderer (.parse md-parser (or text "")))
+        html-with-citations (str/replace html-raw
+                                         #"(?U)\[(\d+)\]"
+                                         "<a href=\"#src-$1\" class=\"text-sky-700 hover:underline font-semibold\">[$1]</a>")]
+    [:div {:class ["md-doc" "space-y-3" "leading-relaxed"]}
+     (hiccup/raw html-with-citations)]))
 
 (defn- sources-view [citations]
   (when (seq citations)
@@ -142,7 +167,7 @@
    (if (:no-evidence? res)
      (notice :info (:answer res))
      [:article {:class ["rounded" "border" "border-slate-200" "bg-white" "p-4"]}
-      (answer-view (:answer res))])
+      (answer-view-md (:answer res))])
    (sources-view (:citations res))
    (when debug? (debug-view (:candidates res) trace))])
 
