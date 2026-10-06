@@ -52,7 +52,14 @@
     [:link {:rel "stylesheet"
             :type "text/css"
             :href (manifest/asset "css/output.css")}]
-    [:title (str title " · LevinRAG")]]
+    [:title (str title " · LevinRAG")]
+    ;; KaTeX LaTeX 公式渲染支援
+    [:link {:rel "stylesheet"
+            :href "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"}]
+    [:script {:src "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+              :defer true}]
+    [:script {:src "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+              :defer true}]]
    [:body {:class ["min-h-screen" "bg-slate-50" "text-slate-800"]
            :hx-headers (when-let [t (csrf-token)] (json/write-value-as-string {"X-CSRF-Token" t}))}
     (nav request)
@@ -62,7 +69,25 @@
     [:script {:src (manifest/asset "js/alpinejs.min.js")
               :defer true}]
     [:script {:src (manifest/asset "js/app.js")
-              :defer true}]]])
+              :defer true}]
+    [:script
+     (hiccup/raw "
+           function renderMath() {
+             if (window.renderMathInElement) {
+               renderMathInElement(document.body, {
+                 delimiters: [
+                   {left: '$$', right: '$$', display: true},
+                   {left: '$', right: '$', display: false},
+                   {left: '\\\\(', right: '\\\\)', display: false},
+                   {left: '\\\\[', right: '\\\\]', display: true}
+                 ],
+                 throwOnError: false
+               });
+             }
+           }
+           document.addEventListener('DOMContentLoaded', renderMath);
+           document.addEventListener('htmx:afterSettle', renderMath);
+         ")]]])
 
 (defn render
   "HTML response for a full page."
