@@ -1,7 +1,8 @@
 (ns replware.levinrag.web.layout
   "Page shell for the web UI: head, assets, CSRF token for HTMX and the
    top navigation."
-  (:require [jsonista.core :as json]
+  (:require [hiccup2.core :as hiccup]
+            [jsonista.core :as json]
             [manifest-edn.core :as manifest]
             [reitit-extras.core :as reitit-extras]
             [ring.middleware.anti-forgery :as anti-forgery]
