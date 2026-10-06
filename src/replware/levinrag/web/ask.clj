@@ -52,23 +52,6 @@
                    "bg-slate-100 text-slate-700")]}
    msg])
 
-(defn- answer-view
-  "Answer text with each [n] turned into a link to source n."
-  [text]
-  (let [m (re-matcher #"\[(\d+)\]" text)]
-    (loop [pos 0
-           out []]
-      (if (.find m)
-        (recur (.end m)
-               (conj out
-                     (subs text pos (.start m))
-                     [:a {:href (str "#src-" (.group m 1))
-                          :class ["text-sky-700" "hover:underline"]}
-                      (.group m 0)]))
-        ;; a seq, not a vector: hiccup would read a vector whose first
-        ;; element is a string as a tag named by that (model) text
-        [:div {:class ["whitespace-pre-line" "leading-relaxed"]} (seq (conj out (subs text pos)))]))))
-
 (def ^:private md-parser
   (-> (Parser/builder)
       (.extensions [(TablesExtension/create)])
