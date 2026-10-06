@@ -11,7 +11,7 @@
             [replware.levinrag.web.layout :as layout]
             [ring.util.codec :as codec]))
 
-(def ^:private max-query 1000)
+(def ^:private max-query 3000)
 
 (defn page [request]
   (layout/render request "問答"
