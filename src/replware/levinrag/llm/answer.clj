@@ -12,15 +12,15 @@
 
 (def empty-answer-message "模型沒有產生回答，請稍後再試。")
 
-(defn prompt
+(defn rag-prompt
   "System prompt for RAG mode with sources."
   []
-  (slurp (io/resource "prompts/answer.md")))
+  (slurp (io/resource "prompts/answer_rag.md")))
 
 (defn general-prompt
   "System prompt when no sources are retrieved."
   []
-  (if-let [res (io/resource "prompts/general.md")]
+  (if-let [res (io/resource "prompts/answer_general.md")]
     (slurp res)
     "你是 AI 助理。請運用自身知識解答使用者的問題。"))
 
@@ -114,7 +114,7 @@
               :degraded (:degraded res)}
         
         ;; 1. 選擇 Prompt 與構建 Messages
-        sys-prompt (if has-passages? (prompt) (general-prompt))
+        sys-prompt (if has-passages? (rag-prompt) (general-prompt))
         input-msgs (messages sys-prompt passages query)
         
         t0 (System/nanoTime)
