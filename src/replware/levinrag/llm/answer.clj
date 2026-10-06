@@ -6,7 +6,7 @@
             [replware.levinrag.retrieval.pipeline :as pipeline]))
 
 (def default-opts
-  {:temperature 0.7
+  {:temperature 0.5
    :max-tokens 4096
    :extra-body nil})
 
