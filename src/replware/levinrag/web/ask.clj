@@ -7,6 +7,7 @@
             [datalevin.core :as d]
             [hiccup2.core :as hiccup]
             [replware.levinrag.api.ask :as api-ask]
+            [replware.levinrag.llm.answer :as answer]
             [replware.levinrag.trace :as trace]
             [replware.levinrag.web.layout :as layout]
             [ring.util.codec :as codec])
@@ -25,10 +26,12 @@
                          :class ["space-y-3"]}
                   [:input {:type "hidden" :name "mode" ":value" "mode"}]
                   [:div {:class ["flex" "items-center" "justify-between" "text-xs" "text-slate-500"]}
-                   [:span "當前提問模式："
-                    [:strong {:class ["font-medium"]
-                             ":class" "mode === 'rag' ? 'text-sky-700' : 'text-purple-700'"
-                             ":text" "mode === 'rag' ? '內部知識 (檢索內部語料)' : '通用知識 (不連接內部語料)'"}]]]
+                   (let [rag-desc (str (get-in answer/modes [:rag :label]) " (" (get-in answer/modes [:rag :desc]) ")")
+                         gen-desc (str (get-in answer/modes [:general :label]) " (" (get-in answer/modes [:general :desc]) ")")]
+                     [:span "當前提問模式："
+                      [:strong {:class ["font-medium"]
+                               ":class" "mode === 'rag' ? 'text-sky-700' : 'text-purple-700'"
+                               ":text" (str "mode === 'rag' ? '" rag-desc "' : '" gen-desc "'")} rag-desc]])]
                   [:textarea {:name "query"
                               :rows 3
                               :maxlength max-query
@@ -125,7 +128,7 @@
                       (if (= mode :general)
                         "bg-purple-100 text-purple-800"
                         "bg-sky-100 text-sky-800")]}
-       (if (= mode :general) "模式：通用知識" "模式：內部知識")]]
+       (str "模式：" (get-in answer/modes [(if (= mode :general) :general :rag) :label]))]]
      [:div {:class ["mt-3" "overflow-x-auto"]}
       [:table {:class ["w-full" "text-xs"]}
        [:thead [:tr (map th ["chunk id" "lexical" "semantic" "RRF" "graph" "rerank" "選中"])]]

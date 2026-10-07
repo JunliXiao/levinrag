@@ -39,7 +39,8 @@
                 ":class" "mode === 'rag' ? 'bg-sky-50 text-sky-700 border-sky-300 hover:bg-sky-100' : 'bg-purple-50 text-purple-700 border-purple-300 hover:bg-purple-100'"}
        [:span {:class ["inline-block" "h-2" "w-2" "rounded-full"]
                ":class" "mode === 'rag' ? 'bg-sky-500' : 'bg-purple-500'"}]
-       [:span {:x-text "mode === 'rag' ? '內部知識' : '通用知識'"}]]
+       [:span {:x-text (str "mode === 'rag' ? '" (get-in answer/modes [:rag :label]) "' : '" (get-in answer/modes [:general :label]) "'")}
+        (get-in answer/modes [:rag :label])]]
       [:span {:class ["text-sm" "text-slate-500"]} (:username principal)]
       [:form {:method "post"
               :action "/logout"}
