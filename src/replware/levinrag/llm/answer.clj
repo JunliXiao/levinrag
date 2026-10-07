@@ -14,6 +14,8 @@
 (def no-evidence-message "在你有權限存取的資料中找不到相關內容。")
 
 (def modes
+  "問題模式"
+  ;; 裡面不能有單引號或反斜線，不然拼出來的 JS 字串會斷掉，Alpine 會報錯，整個元素就無法動
   {:rag     {:id "rag"     :label "內部知識" :desc "檢索內部語料"}
    :general {:id "general" :label "通用知識" :desc "不連接內部語料"}})
 

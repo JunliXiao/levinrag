@@ -31,7 +31,7 @@
                      [:span "當前提問模式："
                       [:strong {:class ["font-medium"]
                                ":class" "mode === 'rag' ? 'text-sky-700' : 'text-purple-700'"
-                               ":text" (str "mode === 'rag' ? '" rag-desc "' : '" gen-desc "'")} rag-desc]])]
+                               "x-text" (str "mode === 'rag' ? '" rag-desc "' : '" gen-desc "'")} rag-desc]])]
                   [:textarea {:name "query"
                               :rows 3
                               :maxlength max-query
