@@ -20,9 +20,7 @@
 (defn general-prompt
   "System prompt when no sources are retrieved."
   []
-  (if-let [res (io/resource "prompts/answer_general.md")]
-    (slurp res)
-    "你是 AI 助理。請運用自身知識解答使用者的問題。"))
+  (slurp (io/resource "prompts/answer_general.md")))
 
 (defn strip-think
   "Remove <think>…</think> blocks; an unclosed <think> drops the rest; a
