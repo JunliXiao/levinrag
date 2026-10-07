@@ -11,6 +11,7 @@
   [:map
    [:query [:string {:min 1
                      :max 1000}]]
+   [:mode {:optional true} [:enum "rag" "general"]]
    [:final_k {:optional true} [:int {:min 1
                                      :max 50}]]
    [:debug {:optional true} :boolean]])
@@ -21,14 +22,16 @@
    dependency failures throw ex-info with :llm/endpoint. Shared by the
    API and the web page."
   [{:keys [app-conn search]} principal query opts]
-  (let [res (answer/ask! search principal query opts)
+  (let [mode (get opts :mode "rag")
+        res (answer/ask! search principal query opts)
         trace-id (trace/write! app-conn {:username (:username principal)
                                          :kind :ask
                                          :query query
-                                         :stages (:stages res)
+                                         :stages (assoc (:stages res) :mode mode)
                                          :degraded (:degraded res)
                                          :answer (:answer res)})]
     (log/info "[ASK]" {:trace_id trace-id
+                       :mode mode
                        :user (:username principal)
                        :citations (count (:citations res))
                        :no_evidence (:no-evidence? res)
@@ -40,8 +43,9 @@
   [{:keys [context principal parameters errors]}]
   (if errors
     (auth/error-response 400 "invalid_request" "請求格式不正確：query 必填，長度 1–1000 字元。")
-    (let [{:keys [query final_k debug]} (:body parameters)
+    (let [{:keys [query mode final_k debug]} (:body parameters)
           opts (cond-> (get-in context [:search :opts])
+                 mode (assoc :mode mode)
                  final_k (assoc :final-k final_k))]
       (try
         (let [{:keys [res trace-id]} (answer-and-trace! context principal query opts)]

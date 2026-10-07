@@ -23,6 +23,12 @@
                          :hx-indicator "#busy"
                          :hx-disabled-elt "find button"
                          :class ["space-y-3"]}
+                  [:input {:type "hidden" :name "mode" ":value" "mode"}]
+                  [:div {:class ["flex" "items-center" "justify-between" "text-xs" "text-slate-500"]}
+                   [:span "當前提問模式："
+                    [:strong {:class ["font-medium"]
+                             ":class" "mode === 'rag' ? 'text-sky-700' : 'text-purple-700'"
+                             ":text" "mode === 'rag' ? '內部知識 (檢索內部語料)' : '通用知識 (不連接內部語料)'"}]]]
                   [:textarea {:name "query"
                               :rows 3
                               :maxlength max-query
@@ -100,7 +106,8 @@
    are read from the stored trace (its :top lists keep 20 per channel;
    below that the candidate's own channel rank is shown)."
   [candidates {:trace/keys [id stages degraded]}]
-  (let [lex (rank-map (get-in stages [:lexical :top]))
+  (let [mode (get stages :mode :rag)
+        lex (rank-map (get-in stages [:lexical :top]))
         sem (rank-map (get-in stages [:semantic :top]))
         rerank (into {} (get-in stages [:rerank :scores]))
         rrf (into {} (get-in stages [:fusion :top]))
@@ -112,7 +119,13 @@
     [:details {:open true
                :data-trace-id (str id)
                :class ["mt-8" "rounded" "border" "border-slate-200" "bg-white" "p-3"]}
-     [:summary {:class ["cursor-pointer" "text-sm" "font-semibold"]} "Debug"]
+     [:summary {:class ["cursor-pointer" "text-sm" "font-semibold" "flex" "items-center" "justify-between"]}
+      [:span "Debug"]
+      [:span {:class ["rounded" "px-2" "py-0.5" "text-xs" "font-normal"
+                      (if (= mode :general)
+                        "bg-purple-100 text-purple-800"
+                        "bg-sky-100 text-sky-800")]}
+       (if (= mode :general) "模式：通用知識" "模式：內部知識")]]
      [:div {:class ["mt-3" "overflow-x-auto"]}
       [:table {:class ["w-full" "text-xs"]}
        [:thead [:tr (map th ["chunk id" "lexical" "semantic" "RRF" "graph" "rerank" "選中"])]]
@@ -170,13 +183,15 @@
   "POST /ask (HTMX): the result fragment for the #result target."
   [{:keys [form-params context principal]}]
   (let [query (str/trim (get form-params "query" ""))
+        mode (get form-params "mode" "rag")
         debug? (some? (get form-params "debug"))]
     (cond
       (str/blank? query) (fragment (notice :info "請輸入問題。"))
       (> (count query) max-query) (fragment (notice :info (str "問題最長 " max-query " 字。")))
       :else
       (try
-        (let [{:keys [res trace-id]} (api-ask/answer-and-trace! context principal query (get-in context [:search :opts]))]
+        (let [opts (assoc (get-in context [:search :opts]) :mode mode)
+              {:keys [res trace-id]} (api-ask/answer-and-trace! context principal query opts)]
           (fragment (result-view res (when debug? (some->> (trace/fetch (d/db (:app-conn context)) trace-id)
                                                            (trace/view-for principal)))
                                  debug?)))

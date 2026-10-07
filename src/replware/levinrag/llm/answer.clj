@@ -11,6 +11,11 @@
    :extra-body nil})
 
 (def empty-answer-message "模型沒有產生回答，請稍後再試。")
+(def no-evidence-message "在你有權限存取的資料中找不到相關內容。")
+
+(def modes
+  {:rag     {:id "rag"     :label "內部知識" :desc "檢索內部語料"}
+   :general {:id "general" :label "通用知識" :desc "不連接內部語料"}})
 
 (defn rag-prompt
   "System prompt for RAG mode with sources."
@@ -100,54 +105,75 @@
                        :llm/body-excerpt (let [s (pr-str resp)] (subs s 0 (min 500 (count s))))})))))
 
 (defn ask!
-  "Search as `principal`, then answer. If passages exist, perform citation RAG;
-   otherwise, fall back to general LLM response."
+  "Branching:
+   - mode 'general': skips retrieval (no embed, no rerank), queries LLM directly with general prompt.
+   - mode 'rag' (default): standard LevinRAG pipeline with no-evidence handling."
   [{:keys [search-fn chat-fn]
     :or {search-fn pipeline/search}
     :as deps} principal query opts]
-  (let [res (search-fn deps principal query opts)
-        passages (:passages res)
-        has-passages? (boolean (seq passages))
-        base {:candidates (:candidates res)
-              :degraded (:degraded res)}
-        
-        ;; 1. 選擇 Prompt 與構建 Messages
-        sys-prompt (if has-passages? (rag-prompt) (general-prompt))
-        input-msgs (messages sys-prompt passages query)
-        
-        t0 (System/nanoTime)
-        resp (chat-fn input-msgs
-                      (merge default-opts
-                             (into {} (for [k (keys default-opts)
-                                            :let [ck (keyword "chat" (name k))]
-                                            :when (contains? opts ck)]
-                                        [k (opts ck)]))))
-        ms (quot (- (System/nanoTime) t0) 1000000)
-        
-        ;; 2. 解析內文與引用標籤
-        raw-text (strip-think (content resp))
-        {:keys [text cited invalid]} (if has-passages?
-                                       (parse-citations raw-text (count passages))
-                                       {:text raw-text :cited [] :invalid []})
-        
-        blank? (str/blank? text)
-        by-n (into {} (map (juxt :n identity)) passages)
-        
-        ;; 3. 標記狀態標籤
-        flags (cond-> (get-in res [:stages :flags] #{})
-                blank? (conj :empty-answer)
-                (not has-passages?) (conj :fallback-parametric-answer)
-                (and has-passages? (not blank?) (empty? cited) (not (re-find not-found-re text))) (conj :uncited-answer))]
-    
-    (assoc base
-           :answer (if blank? empty-answer-message text)
-           :citations (if (or blank? (not has-passages?)) [] (mapv by-n cited))
-           :no-evidence? (not has-passages?)
-           :stages (assoc (:stages res)
-                          :flags flags
-                          :generate {:ms ms
-                                     :model (:model resp)
-                                     :prompt-tokens (get-in resp [:usage :prompt_tokens])
-                                     :completion-tokens (get-in resp [:usage :completion_tokens])
-                                     :finish-reason (get-in resp [:choices 0 :finish_reason])
-                                     :invalid-citations invalid}))))
+  (let [mode (if (= (get opts :mode) "general") :general :rag)]
+    (if (= mode :general)
+      ;; --- 通用知識分支 (免去 embed & rerank) ---
+      (let [t0 (System/nanoTime)
+            resp (chat-fn [{:role "system" :content (general-prompt)}
+                           {:role "user" :content query}]
+                          (merge default-opts
+                                 (into {} (for [k (keys default-opts)
+                                                :let [ck (keyword "chat" (name k))]
+                                                :when (contains? opts ck)]
+                                            [k (opts ck)]))))
+            ms (quot (- (System/nanoTime) t0) 1000000)
+            text (strip-think (content resp))
+            blank? (str/blank? text)]
+        {:answer (if blank? empty-answer-message text)
+         :citations []
+         :candidates []
+         :no-evidence? false
+         :degraded #{}
+         :stages {:flags (if blank? #{:empty-answer} #{})
+                  :mode :general
+                  :generate {:ms ms
+                             :model (:model resp)
+                             :prompt-tokens (get-in resp [:usage :prompt_tokens])
+                             :completion-tokens (get-in resp [:usage :completion_tokens])
+                             :finish-reason (get-in resp [:choices 0 :finish_reason])
+                             :invalid-citations []}}})
+
+      ;; --- 內部 RAG 分支 (既有標準流程) ---
+      (let [res (search-fn deps principal query opts)
+            passages (:passages res)
+            base {:candidates (:candidates res)
+                  :degraded (:degraded res)}]
+        (if (empty? passages)
+          (assoc base
+                 :answer no-evidence-message
+                 :citations []
+                 :no-evidence? true
+                 :stages (assoc (:stages res) :mode :rag))
+          (let [t0 (System/nanoTime)
+                resp (chat-fn (messages (rag-prompt) passages query)
+                              (merge default-opts
+                                     (into {} (for [k (keys default-opts)
+                                                    :let [ck (keyword "chat" (name k))]
+                                                    :when (contains? opts ck)]
+                                                [k (opts ck)]))))
+                ms (quot (- (System/nanoTime) t0) 1000000)
+                {:keys [text cited invalid]} (parse-citations (strip-think (content resp)) (count passages))
+                blank? (str/blank? text)
+                by-n (into {} (map (juxt :n identity)) passages)
+                flags (cond-> (get-in res [:stages :flags] #{})
+                        blank? (conj :empty-answer)
+                        (and (not blank?) (empty? cited) (not (re-find not-found-re text))) (conj :uncited-answer))]
+            (assoc base
+                   :answer (if blank? empty-answer-message text)
+                   :citations (if blank? [] (mapv by-n cited))
+                   :no-evidence? false
+                   :stages (assoc (:stages res)
+                                  :flags flags
+                                  :mode :rag
+                                  :generate {:ms ms
+                                             :model (:model resp)
+                                             :prompt-tokens (get-in resp [:usage :prompt_tokens])
+                                             :completion-tokens (get-in resp [:usage :completion_tokens])
+                                             :finish-reason (get-in resp [:choices 0 :finish_reason])
+                                             :invalid-citations invalid}))))))))

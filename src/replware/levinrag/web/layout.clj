@@ -5,6 +5,7 @@
             [jsonista.core :as json]
             [manifest-edn.core :as manifest]
             [reitit-extras.core :as reitit-extras]
+            [replware.levinrag.llm.answer :as answer]
             [ring.middleware.anti-forgery :as anti-forgery]
             [ring.util.response :as response]))
 
@@ -30,12 +31,21 @@
      (when (:admin? principal)
        [:a {:href "/admin"
             :class ["text-sm" "text-slate-600" "hover:text-slate-900"]} "管理"])
-     [:span {:class ["ml-auto" "text-sm" "text-slate-500"]} (:username principal)]
-     [:form {:method "post"
-             :action "/logout"}
-      (csrf-field)
-      [:button {:type "submit"
-                :class ["text-sm" "text-slate-600" "hover:text-slate-900"]} "登出"]]]))
+     [:div {:class ["ml-auto" "flex" "items-center" "gap-4"]}
+      ;; Toggle 按鈕：[toggle] -> [username] -> [登出]
+      [:button {:type "button"
+                :class ["flex" "items-center" "gap-2" "rounded-full" "border" "px-3" "py-1" "text-xs" "font-medium" "transition-colors"]
+                "@click" "mode = (mode === 'rag' ? 'general' : 'rag')"
+                ":class" "mode === 'rag' ? 'bg-sky-50 text-sky-700 border-sky-300 hover:bg-sky-100' : 'bg-purple-50 text-purple-700 border-purple-300 hover:bg-purple-100'"}
+       [:span {:class ["inline-block" "h-2" "w-2" "rounded-full"]
+               ":class" "mode === 'rag' ? 'bg-sky-500' : 'bg-purple-500'"}]
+       [:span {:x-text "mode === 'rag' ? '內部知識' : '通用知識'"}]]
+      [:span {:class ["text-sm" "text-slate-500"]} (:username principal)]
+      [:form {:method "post"
+              :action "/logout"}
+       (csrf-field)
+       [:button {:type "submit"
+                 :class ["text-sm" "text-slate-600" "hover:text-slate-900"]} "登出"]]]]))
 
 (defn page
   "Full HTML page (hiccup) with `title` and `body` for `request`."
@@ -61,7 +71,8 @@
               :defer true}]
     [:script {:src "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
               :defer true}]]
-   [:body {:class ["min-h-screen" "bg-slate-50" "text-slate-800"]
+   [:body {:x-data "{ mode: 'rag' }"
+           :class ["min-h-screen" "bg-slate-50" "text-slate-800"]
            :hx-headers (when-let [t (csrf-token)] (json/write-value-as-string {"X-CSRF-Token" t}))}
     (nav request)
     [:main {:class ["mx-auto" "max-w-5xl" "px-6" "py-8"]} body]
