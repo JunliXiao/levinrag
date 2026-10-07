@@ -147,10 +147,8 @@
   [:div
    (when (contains? (set (:degraded res)) :rerank-failed)
      (notice :warn "重排序失敗，結果依 RRF 排序。"))
-   (if (:no-evidence? res)
-     (notice :info (:answer res))
-     [:article {:class ["rounded" "border" "border-slate-200" "bg-white" "p-4"]}
-      (answer-view-md (:answer res))])
+   [:article {:class ["rounded" "border" "border-slate-200" "bg-white" "p-4"]}
+    (answer-view-md (:answer res))]
    (sources-view (:citations res))
    (when debug? (debug-view (:candidates res) trace))])
 
